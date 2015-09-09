@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+    (c) 2014 Digital Humanities Lab, Faculty of Humanities, Utrecht University
+    Author: Julian Gonggrijp
+-->
+<html><head>
+
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" type="text/css" href="css/index.css" />
+<script src="js/jquery-2.1.4.min.js"></script>
+<script src="js/jquery.mobile-1.4.5.min.js"></script>
+<title>Reduced testcase</title>
+
+</head><body>
+
+<div data-role="page" id="mirror">
+    <h3>Reflection of week <span class="week-number"></span></h3>
+    <p class="reflection-text"></p>
+    <div class="reflection-discussion"></div>
+    <form class="reflection-response">
+        <label for="form-field-p">Nickname:</label>
+        <input type="text" inputmode="verbatim" maxlength="30" required spellcheck="false" id="form-field-p" name="p">
+        <label for="form-field-r">Reply:</label>
+        <textarea autocomplete=off required minlength=10 maxlength=400 id="form-field-r" name="r"></textarea>
+        <input type="submit" value="React">
+    </form>
+    <div data-role="popup" class="ninja-message ui-content">
+        There have been responses, you may adjust your reply.<br>
+        It has not been saved yet.
+        <a href="#" data-role="button" data-rel="back">OK</a>
+    </div>
+    <div data-role="popup" class="captcha-popup ui-content" data-dismissible="false">
+        Which <strong>three</strong> words do not belong in the list? Separate the words by spaces only.<br>
+        <span class="captcha-challenge"></span>
+        <form class="reflection-captcha">
+            <label for="form-field-ca">Answer:</label>
+            <input type=text inputmode=verbatim required spellcheck=false id="form-field-ca" name="ca" pattern="[a-z]+( +[a-z+]){2}" placeholder="one two three">
+            <input type=submit value="Send">
+        </form>
+    </div>
+    <p class="reflection-closed-notice" style="clear: both;">
+        Reflection has closed.
+    </p>
+    <p class="reflection-closure-announce" style="clear: both;">
+        Replying is possible until <span class="reflection-closure-date"></span>.
+    </p>
+    <div data-role="popup" class="reflection-closed-popup ui-content">
+        Sorry, reflection has closed.
+        <a href="#" data-role="button" data-rel="back">OK</a>
+    </div>
+    <div data-role="popup" class="reflection-invalid-popup ui-content">
+        Please fill both fields.
+        <a href="#" data-role="button" data-rel="back">OK</a>
+    </div>
+</div>
+
+<script src="js/jquery.validate.min.js"></script>
+<script src="js/lodash.min.js"></script>
+<script src="js/index.js"></script>
+<script>
+    app.origin = 'http://127.0.0.1:5004';
+    app.initialize();
+</script>
+
+</body></html>

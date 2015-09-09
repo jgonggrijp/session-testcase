@@ -1,0 +1,54 @@
+/*
+    (c) 2014 Digital Humanities Lab, Faculty of Humanities, Utrecht University
+    Author: Julian Gonggrijp
+*/
+
+[data-role="page"] {
+    max-width:  600px;
+    margin:     0;
+    padding:    10px;
+}
+
+.captcha-challenge {
+    padding:    1em 0;
+    color:      #008;
+    font-style: italic;
+}
+
+.reflection-response {
+    clear: both;
+}
+
+.reflection-discussion > div {
+    clear:          both;
+    margin-bottom:  2em;
+}
+
+.reflection-discussion .ui-collapsible-content {
+    padding-bottom: 50pt;
+}
+
+.reply-date {
+    font-size:      10pt;
+    color:          #777;
+    font-style:     italic;
+    margin-right:   10pt;
+}
+
+.reply-nick {
+    font-weight:    bold;
+    margin-right:   10pt;
+}
+
+.reply-nick:after {
+    content: ":";
+}
+
+.reply-vote {
+    float: left;
+    margin-bottom:  20pt;
+}
+
+.reply-vote:last-child {
+    float: right;
+}
