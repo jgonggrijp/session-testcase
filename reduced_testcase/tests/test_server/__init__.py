@@ -7,7 +7,7 @@
 
 import unittest
 
-import test_views, test_util, test_security
+import test_views, test_security
 
 suite = unittest.TestSuite([
     unittest.TestLoader().loadTestsFromModule(test_views),
