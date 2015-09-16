@@ -70,9 +70,13 @@ class CaptchaSafeTestCase (BaseFixture):
     def test_captcha_safe_inquarantine(self):
         with self.client as c:
             quarantine = datetime.today().replace(microsecond=0) + QUARANTINE_TIME
+            token = generate_key(SystemRandom())
             with c.session_transaction() as s:
+                s['token'] = token
                 s['captcha-quarantine'] = quarantine
-            self.assertEqual(c.post('/test').status_code, 400)
+            self.assertEqual(c.post('/test', data={
+                't': token
+            }).status_code, 400)
             self.assertIn('captcha-quarantine', session)
             self.assertEqual(session['captcha-quarantine'], quarantine)
     
