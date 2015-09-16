@@ -2,12 +2,14 @@
 # Author: Julian Gonggrijp, j.gonggrijp@uu.nl
 
 from datetime import datetime, timedelta
+from random import SystemRandom
 
 from flask import json, session
 
 from ..common_fixtures import BaseFixture
 from ...database.models import *
 from ...database.db import db
+from reduced_testcase.server.security import generate_key
 
 
 class ReflectionTestCase (BaseFixture):
@@ -22,7 +24,7 @@ class ReflectionTestCase (BaseFixture):
     
     def test_reply_to_reflection_passthrough(self):
         with self.client as c:
-            token = 'abcdef'
+            token = generate_key(SystemRandom())
 
             with c.session_transaction() as s:
                 s['token'] = token
@@ -42,7 +44,8 @@ class ReflectionTestCase (BaseFixture):
             self.assertEqual(response_data['status'], 'success')
             self.assertEqual(response_data['token'], session['token'])
             
-            with c.session_transaction() as s:
+            token = session['token']
+            with c.session_transaction(method="POST", data={'t':token}) as s:
                 s['token'] = token
                 s['last-request'] = datetime.now() - timedelta(milliseconds=1001)
             

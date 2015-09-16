@@ -1,5 +1,7 @@
 # A mysteriously failing custom session interface for Flask
 
+**Note:** *The failing tests have been fixed by Jeremy Allen. See [StackOverflow](http://stackoverflow.com/a/32597959/1166087) for his explanation. The remainder of this introduction applies to commit 0c8b456. The rest of the Readme is still up-to-date.*
+
 This is a reduced test case from failing functionality in a hybrid single-page web/PhoneGap application. Please don't be intimidated by the large number of files; this Readme serves to guide you to the relevant parts.
 
 The issue is with a custom session interface, Flask's way to allow you to implement an alternative kind of session. In this case, we are trying to implement a server-side session that is completely cookie-free. The session data are stored in the same relational database as the application data. The session ID ("token") is passed explicitly in the HTTP request and response *bodies* (embedded in JSON data) and stored on LocalStorage by a custom JavaScript routine. Cookies must absolutely be avoided because *a PhoneGap application cannot store cookies*.

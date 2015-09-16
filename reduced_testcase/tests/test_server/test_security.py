@@ -18,23 +18,30 @@ class AuthorizeCaptchaTestCase (BaseFixture):
     
     def test_authorize_captcha_expired(self):
         with self.client as c:
+            token = generate_key(SystemRandom())
             with c.session_transaction() as s:
+                s['token'] = token
                 s['captcha-answer'] = u'one two three'.split()
                 s['captcha-expires'] = datetime.today() - timedelta(minutes=1)
             self.assertEqual(c.post('/test', data={
                 'ca': 'one two three',
+                't': token
             }).status_code, 400)
     
     def test_authorize_captcha_validation(self):
         with self.client as c:
+            token = generate_key(SystemRandom())
             with c.session_transaction() as s:
+                s['token'] = token
                 s['captcha-expires'] = datetime.today() + timedelta(minutes=10)
                 s['captcha-answer'] = u'one two three'.split()
             self.assertEqual(c.post('/test', data={
                 'ca': 'one two three',
+                't': token
             }).status_code, 200)
             self.assertEqual(c.post('/test', data={
                 'ca': 'one two four',
+                't': token
             }).status_code, 400)
 
 
@@ -47,21 +54,29 @@ class CaptchaSafeTestCase (BaseFixture):
     
     def test_captcha_safe_unauthorized(self):
         with self.client as c:
+            token = generate_key(SystemRandom())
             with c.session_transaction() as s:
+                s['token'] = token
                 s['captcha-expires'] = datetime.today() + timedelta(minutes=10)
                 s['captcha-answer'] = u'one two three'.split()
             now = datetime.today()
-            self.assertEqual(c.post('/test').status_code, 400)
-            self.assertEqual(len(session), 2)
+            self.assertEqual(c.post('/test', data={
+                't': token
+            }).status_code, 400)
+            self.assertEqual(len(session), 3)
             self.assertIn('captcha-quarantine', session)
             self.assertTrue(session.permanent)
     
     def test_captcha_safe_inquarantine(self):
         with self.client as c:
             quarantine = datetime.today().replace(microsecond=0) + QUARANTINE_TIME
+            token = generate_key(SystemRandom())
             with c.session_transaction() as s:
+                s['token'] = token
                 s['captcha-quarantine'] = quarantine
-            self.assertEqual(c.post('/test').status_code, 400)
+            self.assertEqual(c.post('/test', data={
+                't': token
+            }).status_code, 400)
             self.assertIn('captcha-quarantine', session)
             self.assertEqual(session['captcha-quarantine'], quarantine)
     
@@ -78,6 +93,8 @@ class VerifyNaturalTestCase (BaseFixture):
         with self.client as c:
             for flags in range(8):  # lo2hi: user agent, referer, tainted
                 headerfields = {}
+                data={}
+                token = generate_key(SystemRandom())
                 with c.session_transaction() as s:
                     s.clear()
                 if flags & 1:
@@ -85,9 +102,10 @@ class VerifyNaturalTestCase (BaseFixture):
                 if flags & 2:
                     headerfields['Referer'] = 'unittest'
                 if flags & 4:
-                    with c.session_transaction() as s:
+                    data['t'] = token
+                    with c.session_transaction(method="post", data={'t': token}) as s:
                         s['tainted'] = True
-                status = c.post('/test', headers=headerfields).status_code
+                status = c.post('/test', headers=headerfields, data=data).status_code
                 tainted = 'tainted' in session
                 if flags == 3:
                     self.assertFalse(tainted)
