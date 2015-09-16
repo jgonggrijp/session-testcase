@@ -30,14 +30,18 @@ class AuthorizeCaptchaTestCase (BaseFixture):
     
     def test_authorize_captcha_validation(self):
         with self.client as c:
+            token = generate_key(SystemRandom())
             with c.session_transaction() as s:
+                s['token'] = token
                 s['captcha-expires'] = datetime.today() + timedelta(minutes=10)
                 s['captcha-answer'] = u'one two three'.split()
             self.assertEqual(c.post('/test', data={
                 'ca': 'one two three',
+                't': token
             }).status_code, 200)
             self.assertEqual(c.post('/test', data={
                 'ca': 'one two four',
+                't': token
             }).status_code, 400)
 
 
