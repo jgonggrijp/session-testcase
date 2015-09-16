@@ -54,12 +54,16 @@ class CaptchaSafeTestCase (BaseFixture):
     
     def test_captcha_safe_unauthorized(self):
         with self.client as c:
+            token = generate_key(SystemRandom())
             with c.session_transaction() as s:
+                s['token'] = token
                 s['captcha-expires'] = datetime.today() + timedelta(minutes=10)
                 s['captcha-answer'] = u'one two three'.split()
             now = datetime.today()
-            self.assertEqual(c.post('/test').status_code, 400)
-            self.assertEqual(len(session), 2)
+            self.assertEqual(c.post('/test', data={
+                't': token
+            }).status_code, 400)
+            self.assertEqual(len(session), 3)
             self.assertIn('captcha-quarantine', session)
             self.assertTrue(session.permanent)
     
